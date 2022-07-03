@@ -16,10 +16,10 @@ import java.util.UUID;
  */
 public class RegisterClient {
 
-    public static final String SERVICE_NAME = "inventory-service";
-    public static final String IP = "192.168.31.207";
-    public static final String HOSTNAME = "inventory01";
-    public static final int PORT = 9000;
+    public static final String SERVICE_NAME = "msa-user";
+    public static final String IP = "192.168.10.108";
+    public static final String HOSTNAME = "user01";
+    public static final int PORT = 9572;
     private static final Long HEARTBEAT_INTERVAL = 30 * 1000L;
 
     private static final Log log = LogFactory.get();
@@ -28,9 +28,19 @@ public class RegisterClient {
      * 服务实例id
      */
     private final String serviceInstanceId;
+    /**
+     * 心跳线程
+     */
+    private HeartbeatWorker heartbeatWorker;
+    /**
+     * 心跳线程运行状态
+     */
+    private Boolean isRunning;
 
     public RegisterClient() {
         this.serviceInstanceId = UUID.randomUUID().toString();
+        heartbeatWorker = new HeartbeatWorker();
+        isRunning = Boolean.TRUE;
     }
 
     public void start() {
@@ -42,12 +52,18 @@ public class RegisterClient {
             registerWorker.join();
 
             // 创建心跳续约线程
-            HeartbeatWorker heartbeatWorker = new HeartbeatWorker();
             heartbeatWorker.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+
+    public void shutdown() {
+        this.isRunning = Boolean.FALSE;
+        // 打断心跳线程
+        heartbeatWorker.interrupt();
     }
 
 
@@ -82,7 +98,7 @@ public class RegisterClient {
             HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
             heartbeatRequest.setServiceInstanceId(serviceInstanceId);
             heartbeatRequest.setServiceName(SERVICE_NAME);
-            while (true) {
+            while (isRunning) {
                 try {
                     log.info("发送服务心跳：{}", JSONUtil.toJsonStr(heartbeatRequest));
                     HeartbeatResponse heartbeatResponse = HttpSender.heartbeat(heartbeatRequest);
@@ -95,7 +111,6 @@ public class RegisterClient {
                     log.info("发送服务心跳出现异常", e);
                     e.printStackTrace();
                 }
-
             }
         }
     }

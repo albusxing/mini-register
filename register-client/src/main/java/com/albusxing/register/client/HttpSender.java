@@ -1,6 +1,5 @@
 package com.albusxing.register.client;
 
-import cn.hutool.http.HttpUtil;
 import com.albusxing.register.core.HeartbeatRequest;
 import com.albusxing.register.core.HeartbeatResponse;
 import com.albusxing.register.core.RegisterRequest;

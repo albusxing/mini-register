@@ -7,9 +7,12 @@ package com.albusxing.register.client;
  */
 public class RegisterClientTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         RegisterClient registerClient = new RegisterClient();
         registerClient.start();
+
+        Thread.sleep(10 * 1000);
+        registerClient.shutdown();
     }
 }
