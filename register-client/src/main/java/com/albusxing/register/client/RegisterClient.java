@@ -82,6 +82,7 @@ public class RegisterClient {
         // 关闭的时候，如果还有心跳线程处于sleep中，就打断线程的睡眠
         this.heartbeatWorker.interrupt();
         this.registry.destroy();
+        HttpSender.cancel(SERVICE_NAME, serviceInstanceId);
     }
 
 

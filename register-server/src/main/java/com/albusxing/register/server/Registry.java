@@ -76,7 +76,7 @@ public class Registry {
      * @param serviceName
      * @param serviceInstanceId
      */
-    public synchronized void removeServiceInstance(String serviceName, String serviceInstanceId) {
+    public synchronized void remove(String serviceName, String serviceInstanceId) {
         log.info("移除服务实例:[{}]({})", serviceName, serviceInstanceId);
         Map<String, ServiceInstance> serviceInstanceMap = registry.get(serviceName);
         serviceInstanceMap.remove(serviceInstanceId);

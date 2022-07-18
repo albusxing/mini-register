@@ -70,4 +70,12 @@ public class RegisterServerController {
         }
         return heartbeatResponse;
     }
+
+    /**
+     * 服务下线
+     */
+    @PostMapping("/cancel")
+    public void cancel(String serviceName, String serviceInstanceId) {
+        registry.remove(serviceName, serviceInstanceId);
+    }
 }

@@ -55,7 +55,7 @@ public class ServiceAliveMonitor {
                         for (Map.Entry<String, ServiceInstance> instanceEntry : serviceInstanceMap.entrySet()) {
                             ServiceInstance serviceInstance = instanceEntry.getValue();
                             if (!serviceInstance.isAlive()) {
-                                registry.removeServiceInstance(serviceName, serviceInstance.getServiceInstanceId());
+                                registry.remove(serviceName, serviceInstance.getServiceInstanceId());
                             }
                         }
                     }
