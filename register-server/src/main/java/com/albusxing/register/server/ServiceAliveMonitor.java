@@ -1,5 +1,7 @@
 package com.albusxing.register.server;
 
+import com.albusxing.register.core.ServiceInstance;
+
 import java.util.Map;
 
 /**

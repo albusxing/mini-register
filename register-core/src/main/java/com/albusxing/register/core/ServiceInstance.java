@@ -1,4 +1,4 @@
-package com.albusxing.register.server;
+package com.albusxing.register.core;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * 一个服务可能存在多个实例
  * @author liguoqing
  */
+@Slf4j
 @Data
 public class ServiceInstance {
 
@@ -68,7 +69,6 @@ public class ServiceInstance {
      * 让注册中心指定服务实例还存活
      */
     @Data
-    @Slf4j
     private class Lease {
 
         /**

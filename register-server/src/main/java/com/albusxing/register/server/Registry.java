@@ -1,4 +1,5 @@
 package com.albusxing.register.server;
+import com.albusxing.register.core.ServiceInstance;
 import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;

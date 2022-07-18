@@ -5,7 +5,7 @@ import com.albusxing.register.core.HeartbeatResponse;
 import com.albusxing.register.core.RegisterRequest;
 import com.albusxing.register.core.RegisterResponse;
 import com.albusxing.register.server.Registry;
-import com.albusxing.register.server.ServiceInstance;
+import com.albusxing.register.core.ServiceInstance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

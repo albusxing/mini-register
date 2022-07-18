@@ -12,7 +12,7 @@ public class RegisterClientTest {
         RegisterClient registerClient = new RegisterClient();
         registerClient.bootstrap();
 
-        Thread.sleep(10 * 1000);
+        Thread.sleep(40 * 1000);
         registerClient.shutdown();
     }
 }
