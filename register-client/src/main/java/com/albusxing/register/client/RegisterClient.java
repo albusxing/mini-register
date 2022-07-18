@@ -1,12 +1,11 @@
 package com.albusxing.register.client;
 import cn.hutool.json.JSONUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.albusxing.register.core.HeartbeatRequest;
 import com.albusxing.register.core.HeartbeatResponse;
 import com.albusxing.register.core.RegisterRequest;
 import com.albusxing.register.core.RegisterResponse;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,6 +13,7 @@ import java.util.UUID;
  * 负责与register-server通信
  * @author liguoqing
  */
+@Slf4j
 public class RegisterClient {
 
     public static final String SERVICE_NAME = "msa-user";
@@ -22,7 +22,6 @@ public class RegisterClient {
     public static final int PORT = 9572;
     private static final Long HEARTBEAT_INTERVAL = 30 * 1000L;
 
-    private static final Log log = LogFactory.get();
 
     /**
      * 服务实例id
@@ -34,8 +33,10 @@ public class RegisterClient {
     private HeartbeatWorker heartbeatWorker;
     /**
      * 心跳线程运行状态
+     * 客户端调用shutdown方法更改isRunning状态；心跳线程读取isRunning状态，不断地发送心跳；
+     * 这2个线程在读写这个共享变量，所以需要使用volatile保证变量的可见性
      */
-    private Boolean isRunning;
+    private volatile Boolean isRunning;
 
     public RegisterClient() {
         this.serviceInstanceId = UUID.randomUUID().toString();
@@ -43,12 +44,15 @@ public class RegisterClient {
         isRunning = Boolean.TRUE;
     }
 
-    public void start() {
+    /**
+     * 客户端启动方法
+     */
+    public void bootstrap() {
         try {
             // 创建服务注册线程
             RegisterWorker registerWorker = new RegisterWorker();
             registerWorker.start();
-            // main线程会等待注册线程执行完成之后，才开始执行心跳线程
+            // join(): main线程会等待注册线程执行完成之后，才开始执行心跳线程
             registerWorker.join();
 
             // 创建心跳续约线程
@@ -60,9 +64,13 @@ public class RegisterClient {
     }
 
 
+    /**
+     * 客户端关闭
+     */
     public void shutdown() {
         this.isRunning = Boolean.FALSE;
         // 打断心跳线程
+        // 关闭的时候，如果还有心跳线程处于sleep中，就打断线程的睡眠
         heartbeatWorker.interrupt();
     }
 

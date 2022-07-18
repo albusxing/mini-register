@@ -73,8 +73,10 @@ public class ServiceInstance {
 
         /**
          * 最近一次的心跳时间
+         * 服务续约的时候，会更新latestHeartbeatTime；服务健康检查下线，会判断是否存活，会读取latestHeartbeatTime变量；
+         * 这里多个线程读写了共享变量，所以需要使用volatile来保证其可见性
          */
-        private Long latestHeartbeatTime = System.currentTimeMillis();
+        private volatile Long latestHeartbeatTime = System.currentTimeMillis();
 
         /**
          * 续租

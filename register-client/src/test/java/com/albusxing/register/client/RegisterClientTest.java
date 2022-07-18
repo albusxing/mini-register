@@ -10,7 +10,7 @@ public class RegisterClientTest {
     public static void main(String[] args) throws InterruptedException {
 
         RegisterClient registerClient = new RegisterClient();
-        registerClient.start();
+        registerClient.bootstrap();
 
         Thread.sleep(10 * 1000);
         registerClient.shutdown();
