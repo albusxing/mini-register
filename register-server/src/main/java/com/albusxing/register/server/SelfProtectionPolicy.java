@@ -1,12 +1,14 @@
 package com.albusxing.register.server;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 自我保护机制
  * @author Albusxing
  * @created 2022/7/18
  */
+@Slf4j
 @Data
 public class SelfProtectionPolicy {
 
@@ -27,5 +29,17 @@ public class SelfProtectionPolicy {
 
     public static SelfProtectionPolicy getInstance() {
         return INSTANCE;
+    }
+
+    public boolean enabledSelfProtection() {
+        HeartbeatMeasureRate heartbeatMeasureRate = HeartbeatMeasureRate.getInstance();
+        long latestMinuteHeartbeatRate = heartbeatMeasureRate.get();
+
+        if(latestMinuteHeartbeatRate < this.expectedHeartbeatThreshold) {
+            log.info("【自我保护机制开启】最近一分钟心跳次数=" + latestMinuteHeartbeatRate + ", 期望心跳次数=" + this.expectedHeartbeatThreshold);
+            return true;
+        }
+        log.info("【自我保护机制未开启】最近一分钟心跳次数=" + latestMinuteHeartbeatRate + ", 期望心跳次数=" + this.expectedHeartbeatThreshold);
+        return false;
     }
 }
