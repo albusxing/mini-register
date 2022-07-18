@@ -4,6 +4,7 @@ import com.albusxing.register.core.HeartbeatRequest;
 import com.albusxing.register.core.HeartbeatResponse;
 import com.albusxing.register.core.RegisterRequest;
 import com.albusxing.register.core.RegisterResponse;
+import com.albusxing.register.server.HeartbeatMeasureRate;
 import com.albusxing.register.server.Registry;
 import com.albusxing.register.core.ServiceInstance;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,9 @@ public class RegisterServerController {
                     heartbeatRequest.getServiceInstanceId());
             serviceInstance.renew();
             heartbeatResponse.setStatus(HeartbeatResponse.SUCCESS);
+
+            HeartbeatMeasureRate heartbeatMeasureRate = HeartbeatMeasureRate.getInstance();
+            heartbeatMeasureRate.increment();
         } catch (Exception e) {
             log.error("服务发送心跳失败", e);
             heartbeatResponse.setStatus(HeartbeatResponse.FAILURE);
