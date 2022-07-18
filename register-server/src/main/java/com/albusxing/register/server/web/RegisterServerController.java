@@ -7,6 +7,7 @@ import com.albusxing.register.core.RegisterResponse;
 import com.albusxing.register.server.HeartbeatMeasureRate;
 import com.albusxing.register.server.Registry;
 import com.albusxing.register.core.ServiceInstance;
+import com.albusxing.register.server.SelfProtectionPolicy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +41,16 @@ public class RegisterServerController {
             serviceInstance.setPort(registerRequest.getPort());
             registry.register(serviceInstance);
             registerResponse.setStatus(RegisterResponse.SUCCESS);
+
+            // 更新自我保护机制的阈值
+            synchronized(SelfProtectionPolicy.class) {
+                SelfProtectionPolicy selfProtectionPolicy = SelfProtectionPolicy.getInstance();
+                selfProtectionPolicy.setExpectedHeartbeatRate(
+                        selfProtectionPolicy.getExpectedHeartbeatRate() + 2);
+                selfProtectionPolicy.setExpectedHeartbeatThreshold(
+                        (long)(selfProtectionPolicy.getExpectedHeartbeatRate() * 0.85));
+            }
+
         } catch (Exception e) {
             log.error("服务注册失败", e);
             registerResponse.setStatus(RegisterResponse.FAILURE);
@@ -77,5 +88,13 @@ public class RegisterServerController {
     @PostMapping("/cancel")
     public void cancel(String serviceName, String serviceInstanceId) {
         registry.remove(serviceName, serviceInstanceId);
+        // 更新自我保护机制的阈值
+        synchronized(SelfProtectionPolicy.class) {
+            SelfProtectionPolicy selfProtectionPolicy = SelfProtectionPolicy.getInstance();
+            selfProtectionPolicy.setExpectedHeartbeatRate(
+                    selfProtectionPolicy.getExpectedHeartbeatRate() - 2);
+            selfProtectionPolicy.setExpectedHeartbeatThreshold(
+                    (long)(selfProtectionPolicy.getExpectedHeartbeatRate() * 0.85));
+        }
     }
 }
