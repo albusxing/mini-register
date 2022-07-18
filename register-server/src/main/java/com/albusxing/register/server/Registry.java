@@ -42,7 +42,7 @@ public class Registry {
      * 服务注册
      * @param serviceInstance 服务实例
      */
-    public void register(ServiceInstance serviceInstance) {
+    public synchronized void register(ServiceInstance serviceInstance) {
         Map<String, ServiceInstance> serviceInstanceMap = registry.get(serviceInstance.getServiceName());
         if (null == serviceInstanceMap) {
             serviceInstanceMap = new HashMap<>();
@@ -59,7 +59,7 @@ public class Registry {
      * @param serviceInstanceId 服务实例id
      * @return
      */
-    public ServiceInstance getServiceInstance(String serviceName, String serviceInstanceId) {
+    public synchronized ServiceInstance getServiceInstance(String serviceName, String serviceInstanceId) {
         return registry.get(serviceName).get(serviceInstanceId);
     }
 
@@ -67,7 +67,7 @@ public class Registry {
      * 获取注册中心中注册的服务实例
      * @return
      */
-    public Map<String, Map<String, ServiceInstance>> getRegistry() {
+    public synchronized Map<String, Map<String, ServiceInstance>> getRegistry() {
         return registry;
     }
 
@@ -76,7 +76,7 @@ public class Registry {
      * @param serviceName
      * @param serviceInstanceId
      */
-    public void removeServiceInstance(String serviceName, String serviceInstanceId) {
+    public synchronized void removeServiceInstance(String serviceName, String serviceInstanceId) {
         log.info("移除服务实例:[{}]({})", serviceName, serviceInstanceId);
         Map<String, ServiceInstance> serviceInstanceMap = registry.get(serviceName);
         serviceInstanceMap.remove(serviceInstanceId);
